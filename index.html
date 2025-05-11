@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harry Potter Wand Profile Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Custom CSS for the image grid, using CSS grid */
+      .image-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Responsive columns */
+        gap: 1rem; /* Space between grid items */
+        padding: 1rem;
+      }
+      .image-grid img {
+        width: 100%; /* Make images fill their grid cells */
+        height: auto;
+        border-radius: 0.5rem; /* Rounded corners for images */
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Add shadow */
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+        object-fit: cover; /* Ensure images cover the area, cropping if needed */
+      }
+      .image-grid img:hover {
+        transform: translateY(-0.5rem) scale(1.05); /* Slight lift and scale on hover */
+        box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15), 0 3px 6px -1px rgba(0, 0, 0, 0.08); /* Increased shadow on hover */
+      }
+      /* Style for the title, using Press Start 2P */
+      #wand-title {
+        font-family: 'Press Start 2P', cursive;
+      }
+       /* Style for the form */
+      #add-wand-form {
+        background-color: #f7fafc;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+      #add-wand-form label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+        color: #4a5568;
+      }
+      #add-wand-form input[type="text"],
+      #add-wand-form input[type="file"] {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.375rem;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+        transition: border-color 0.2s ease;
+      }
+      #add-wand-form input[type="text"]:focus,
+      #add-wand-form input[type="file"]:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+      }
+      #add-wand-form button {
+        background-color: #68d391;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.375rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        border: none;
+      }
+      #add-wand-form button:hover {
+        background-color: #48bb78;
+      }
+      #add-wand-form button:disabled {
+        background-color: #a0aec0;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+    <div class="container mx-auto p-6 bg-white rounded-lg shadow-md">
+        <h1 id="wand-title" class="text-3xl font-semibold text-center text-indigo-600 mb-8">
+            My DIY Harry Potter Wands
+        </h1>
+
+        <div class="text-center mb-6">
+            <p class="text-gray-700">
+                Here are some of the wands I've crafted.  Each one is unique,
+                just like the witch or wizard it will choose!  Add your own wands using the form below.
+            </p>
+        </div>
+
+        <form id="add-wand-form" class="mb-8">
+            <label for="wand-image">Wand Image:</label>
+            <input type="file" id="wand-image" accept="image/*" required>
+
+            <label for="wand-alt">Image Description (Alt Text):</label>
+            <input type="text" id="wand-alt" placeholder="Enter description" required>
+
+            <label for="wand-caption">Wand Caption:</label>
+            <input type="text" id="wand-caption" placeholder="Enter caption" required>
+
+            <button type="submit" id="add-wand-button">Add Wand</button>
+        </form>
+
+        <div class="image-grid" id="wand-images">
+            </div>
+    </div>
+
+    <script>
+        const wandImagesDiv = document.getElementById('wand-images');
+        const addWandForm = document.getElementById('add-wand-form');
+        const addWandButton = document.getElementById('add-wand-button');
+
+        let wandImages = [];
+
+        addWandForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const imageInput = document.getElementById('wand-image');
+            const altInput = document.getElementById('wand-alt');
+            const captionInput = document.getElementById('wand-caption');
+
+            if (!imageInput.files || imageInput.files.length === 0) {
+                alert("Please select an image for your wand."); // Basic validation
+                return;
+            }
+
+            const imageFile = imageInput.files[0];
+            const altText = altInput.value.trim();
+            const caption = captionInput.value.trim();
+
+            if (!altText || !caption) {
+                alert("Please provide both a description and a caption.");
+                return;
+            }
+             // Use a FileReader to get the data URL of the image
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const newWand = {
+                    src: e.target.result, // Use the data URL
+                    alt: altText,
+                    caption: caption,
+                };
+
+                wandImages.push(newWand); // Add to the array
+                console.log("New wand added:", newWand); // Debugging
+
+                const img = document.createElement('img');
+                img.src = newWand.src;
+                img.alt = newWand.alt;
+                img.title = newWand.caption;
+                wandImagesDiv.appendChild(img); // Add to the grid
+
+                // Clear the form
+                addWandForm.reset();
+                addWandButton.disabled = false;
+            };
+
+            reader.readAsDataURL(imageFile); // Start reading the file
+
+            // Disable the button to prevent multiple submissions
+            addWandButton.disabled = true;
+        });
+    </script>
+</body>
+</html>
